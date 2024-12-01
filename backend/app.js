@@ -1,30 +1,23 @@
 const express = require('express');
 const sequelize = require('./config/config');
-const Usuario = require('./models/Usuario');
-const Item = require('./models/Item');
-const Comanda = require('./models/Comanda');
-const Pedido = require('./models/Pedido');
+const { Usuario, Item, Comanda, Pedido } = require('./models');
 
 const usuarioRoutes = require('./routes/usuario');
 const itemRoutes = require('./routes/item');
-
-Usuario.hasMany(Comanda);
-Comanda.belongsTo(Usuario);
-Comanda.hasMany(Pedido);
-Pedido.belongsTo(Comanda);
-Pedido.belongsTo(Item);
+const comandaRoutes = require('./routes/comanda');
+const pedidoRoutes = require('./routes/pedido');
 
 const app = express();
 app.use(express.json());
 
-sequelize.sync().then(() => {
-  console.log('Banco de dados sincronizado');
-}).catch((err) => console.error('Erro ao sincronizar o banco de dados:', err));
-
 app.use('/usuarios', usuarioRoutes);
 app.use('/itens', itemRoutes);
+app.use('/comandas', comandaRoutes);
+app.use('/pedidos', pedidoRoutes);
 
-// Adicione outras rotas aqui conforme necessário
+sequelize.sync({ force: false })
+  .then(() => console.log('Banco sincronizado!'))
+  .catch(err => console.error('Erro ao sincronizar banco:', err));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
