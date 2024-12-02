@@ -1,52 +1,52 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
-import api from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import axios from 'axios';
 
 export default function CadastroUsuarioScreen() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [usuarios, setUsuarios] = useState([]);
 
   const cadastrarUsuario = async () => {
     try {
-      const response = await api.post('/usuarios', { nome, email, senha });
-      if (response.status === 201) {
-        Alert.alert('Sucesso', `Usuário ${response.data.nome} cadastrado com sucesso!`);
-        setNome('');
-        setEmail('');
-        setSenha('');
-        setMensagem('');
-      }
+      const response = await axios.post('http://localhost:3000/usuarios', {
+        nome,
+        email,
+        senha,
+      });
+      alert(`Usuário ${response.data.nome} cadastrado com sucesso!`);
+      carregarUsuarios();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível cadastrar o usuário.');
+      alert('Erro ao cadastrar usuário');
     }
   };
 
+  const carregarUsuarios = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/usuarios');
+      setUsuarios(response.data);
+    } catch (error) {
+      alert('Erro ao carregar usuários');
+    }
+  };
+
+  useEffect(() => {
+    carregarUsuarios();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={nome}
-        onChangeText={setNome}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
+      <Text style={styles.title}>Cadastro de Usuários</Text>
+      <TextInput placeholder="Nome" value={nome} onChangeText={setNome} style={styles.input} />
+      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
+      <TextInput placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} style={styles.input} />
       <Button title="Cadastrar" onPress={cadastrarUsuario} />
+      <FlatList
+        data={usuarios}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <Text>{item.nome} - {item.email}</Text>}
+      />
     </View>
   );
 }
@@ -54,15 +54,17 @@ export default function CadastroUsuarioScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   input: {
-    height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
     marginBottom: 10,
+    padding: 10,
     borderRadius: 5,
-    paddingHorizontal: 10,
   },
 });

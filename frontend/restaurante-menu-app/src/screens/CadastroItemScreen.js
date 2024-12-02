@@ -1,40 +1,49 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import api from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import axios from 'axios';
 
 export default function CadastroItemScreen() {
   const [nome, setNome] = useState('');
   const [preco, setPreco] = useState('');
+  const [itens, setItens] = useState([]);
 
   const cadastrarItem = async () => {
     try {
-      const response = await api.post('/itens', { nome, preco });
-      if (response.status === 201) {
-        Alert.alert('Sucesso', `Item ${response.data.nome} cadastrado com sucesso!`);
-        setNome('');
-        setPreco('');
-      }
+      const response = await axios.post('http://localhost:3000/itens', {
+        nome,
+        preco,
+      });
+      alert(`Item ${response.data.nome} cadastrado com sucesso!`);
+      carregarItens();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível cadastrar o item.');
+      alert('Erro ao cadastrar item');
     }
   };
 
+  const carregarItens = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/itens');
+      setItens(response.data);
+    } catch (error) {
+      alert('Erro ao carregar itens');
+    }
+  };
+
+  useEffect(() => {
+    carregarItens();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome do Item"
-        value={nome}
-        onChangeText={setNome}
+      <Text style={styles.title}>Cadastro de Itens</Text>
+      <TextInput placeholder="Nome do Item" value={nome} onChangeText={setNome} style={styles.input} />
+      <TextInput placeholder="Preço" value={preco} onChangeText={setPreco} style={styles.input} />
+      <Button title="Cadastrar" onPress={cadastrarItem} />
+      <FlatList
+        data={itens}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <Text>{item.nome} - R$ {item.preco}</Text>}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Preço"
-        value={preco}
-        onChangeText={setPreco}
-        keyboardType="numeric"
-      />
-      <Button title="Cadastrar Item" onPress={cadastrarItem} />
     </View>
   );
 }
@@ -42,15 +51,17 @@ export default function CadastroItemScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   input: {
-    height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
     marginBottom: 10,
+    padding: 10,
     borderRadius: 5,
-    paddingHorizontal: 10,
   },
 });

@@ -1,48 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, Button, StyleSheet, Alert } from 'react-native';
-import api from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import axios from 'axios';
 
 export default function ComandasScreen() {
   const [comandas, setComandas] = useState([]);
+
+  const carregarComandas = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/comandas');
+      setComandas(response.data);
+    } catch (error) {
+      alert('Erro ao carregar comandas');
+    }
+  };
+
+  const adicionarComanda = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/comandas', {
+        usuarioId: 1, // Exemplo: ID fixo
+      });
+      alert(`Comanda ID ${response.data.id} criada com sucesso!`);
+      carregarComandas();
+    } catch (error) {
+      alert('Erro ao criar comanda');
+    }
+  };
 
   useEffect(() => {
     carregarComandas();
   }, []);
 
-  const carregarComandas = async () => {
-    try {
-      const response = await api.get('/comandas');
-      setComandas(response.data);
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar as comandas.');
-    }
-  };
-
-  const finalizarComanda = async (id) => {
-    try {
-      await api.put(`/comandas/${id}/finalizar`);
-      Alert.alert('Sucesso', 'Comanda finalizada!');
-      carregarComandas();
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível finalizar a comanda.');
-    }
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.comanda}>
-      <Text style={styles.text}>ID: {item.id}</Text>
-      <Text style={styles.text}>Cliente: {item.Usuario?.nome || 'Desconhecido'}</Text>
-      <Text style={styles.text}>Status: {item.status}</Text>
-      <Button title="Finalizar" onPress={() => finalizarComanda(item.id)} />
-    </View>
-  );
-
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Gerenciamento de Comandas</Text>
+      <Button title="Criar Comanda" onPress={adicionarComanda} />
       <FlatList
         data={comandas}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
+        renderItem={({ item }) => <Text>Comanda #{item.id} - Usuário: {item.usuarioId}</Text>}
       />
     </View>
   );
@@ -51,16 +46,11 @@ export default function ComandasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 20,
   },
-  comanda: {
-    padding: 15,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-  },
-  text: {
-    marginBottom: 5,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
