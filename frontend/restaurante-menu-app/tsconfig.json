@@ -9,9 +9,9 @@
     }
   },
   "include": [
-    "**/*.ts",
+    "**/*.js",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/CopaCozinhaScreen.js", "app/index.js", "app/MainMenuScreen.js" , "app/RelatoriosVendaScreen.js" , "app/CadastroItemScreen.js", "app/CadastroUsuarioScreen.js", "app/LoginScreen.js", "app/sobre.js", "app/_layout.js" , "app/ComandasScreen.js"  ]
 }

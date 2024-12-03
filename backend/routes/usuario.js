@@ -3,7 +3,6 @@ const { cadastrarUsuario, listarUsuarios, loginUsuario } = require('../controlle
 
 const router = express.Router();
 
-// Rotas de usuário
 router.post('/cadastrar', cadastrarUsuario);
 router.get('/', listarUsuarios);
 router.post('/login', loginUsuario);
