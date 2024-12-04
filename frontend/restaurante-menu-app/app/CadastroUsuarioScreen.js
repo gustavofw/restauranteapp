@@ -10,7 +10,7 @@ export default function CadastroUsuarioScreen() {
 
   const cadastrarUsuario = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/usuarios', {
+      const response = await axios.post('http://localhost:3000/usuarios/cadastrar', {
         nome,
         email,
         senha,
@@ -24,7 +24,8 @@ export default function CadastroUsuarioScreen() {
 
   const carregarUsuarios = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/usuarios');
+      const response = await axios.get('http://localhost:3000/usuarios',{headers:{'Content-Type': 'application/json'}});
+      console.log(response)
       setUsuarios(response.data);
     } catch (error) {
       alert('Erro ao carregar usuários');

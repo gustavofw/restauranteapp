@@ -5,13 +5,15 @@ import axios from 'axios';
 export default function CadastroItemScreen() {
   const [nome, setNome] = useState('');
   const [preco, setPreco] = useState('');
+  const [tipo, setTipo] = useState('');
   const [itens, setItens] = useState([]);
 
   const cadastrarItem = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/itens', {
+      const response = await axios.post('http://localhost:3000/itens/cadastrar', {
         nome,
         preco,
+        tipo,
       });
       alert(`Item ${response.data.nome} cadastrado com sucesso!`);
       carregarItens();
@@ -38,6 +40,7 @@ export default function CadastroItemScreen() {
       <Text style={styles.title}>Cadastro de Itens</Text>
       <TextInput placeholder="Nome do Item" value={nome} onChangeText={setNome} style={styles.input} />
       <TextInput placeholder="Preço" value={preco} onChangeText={setPreco} style={styles.input} />
+      <TextInput placeholder="tipo" value={tipo} onChangeText={setTipo} style={styles.input} />
       <Button title="Cadastrar" onPress={cadastrarItem} />
       <FlatList
         data={itens}
