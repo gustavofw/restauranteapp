@@ -7,7 +7,7 @@ const usuarioRoutes = require('./routes/usuario');
 const itemRoutes = require('./routes/item');
 const comandaRoutes = require('./routes/comanda');
 const pedidoRoutes = require('./routes/pedido');
-const loginRoutes = require('./routes/login'); // Rota de login
+const loginRoutes = require('./routes/login'); 
 
 
 const app = express();
@@ -19,7 +19,7 @@ app.use('/usuarios', usuarioRoutes);
 app.use('/itens', itemRoutes);
 app.use('/comandas', comandaRoutes);
 app.use('/pedidos', pedidoRoutes);
-app.use('/login', loginRoutes); // Adicionando a rota de login
+app.use('/login', loginRoutes); 
 
 
 app.get('/', (req, res) => {

@@ -1,11 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
+import { Image } from 'expo-image';
+
+const PlaceholderImage = require('@/assets/images/telafundo.png');
 
 export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bem-vindo ao Sistema de Restaurante</Text>
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image source={PlaceholderImage} style={styles.image} />
+        </View>
+      </View>
       <Link href="/CadastroUsuarioScreen" style={styles.button}>
         Ir para o cadastro de usuários
       </Link>
@@ -34,21 +42,34 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 20,
     backgroundColor: '#FF7F00',
+    alignItems: 'center',
   },
+  imageContainer: {
+    flex: 1,
+  },
+   image: {
+    width: 1500,
+    height: 500,
+    borderRadius: 18,
+    opacity: 0.2,
+   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#fff',
     alignSelf: 'flex-start', 
-    padding: 'auto'
+    padding: 'auto',
   },
   button: {
     marginVertical: 10,
-    fontSize: 20,
+    fontSize: 27,
+    fontWeight: 'bold',
     color: '#fff',
+    alignSelf: 'flex-start', 
+    padding: 'auto',
+    marginBottom: '20px',
   },
 });

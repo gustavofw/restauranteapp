@@ -1,14 +1,14 @@
 const Usuario = require('./Usuario');
-const Item = require('./Item');
 const Comanda = require('./Comanda');
 const Pedido = require('./Pedido');
+const Item = require('./Item');
 
-Usuario.hasMany(Comanda);
-Comanda.belongsTo(Usuario);
+const models = { Usuario, Comanda, Pedido, Item };
 
-Comanda.hasMany(Pedido);
-Pedido.belongsTo(Comanda);
+Object.keys(models).forEach((modelName) => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models);
+  }
+});
 
-Pedido.belongsTo(Item);
-
-module.exports = { Usuario, Item, Comanda, Pedido };
+module.exports = models;
