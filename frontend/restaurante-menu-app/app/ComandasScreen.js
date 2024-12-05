@@ -123,23 +123,21 @@ export default function ComandasScreen() {
   }, [usuarioSelecionado]);
   
   const fecharComanda = async () => {
-    if (!comandaSelecionada) {
-      alert('Por favor, selecione uma comanda!');
+    if (!comandaSelecionada || isNaN(comandaSelecionada)) {
+      alert('Por favor, selecione ou insira um número de comanda válido!');
       return;
     }
   
     try {
-      await axios.put(`http://localhost:3000/comandas/${comandaSelecionada}/fechar`);
-      alert('Comanda fechada com sucesso!');
-      setComandaSelecionada('');
-      carregarComandasPorUsuario(usuarioSelecionado); 
+      const response = await axios.put(`http://localhost:3000/comandas/${comandaSelecionada}/fechar`);
+      alert(response.data.message); // Mensagem de sucesso
+      setComandaSelecionada(''); // Limpa a seleção da comanda
+      carregarComandas(); // Atualiza a lista de comandas após fechamento
     } catch (error) {
-      alert('Erro ao fechar comanda');
+      alert('Erro ao fechar comanda. Verifique o número inserido.');
     }
-  };
+  };  
   
-
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gerenciamento de Comandas</Text>
@@ -177,21 +175,15 @@ export default function ComandasScreen() {
 
       <Button title="Criar Comanda" onPress={adicionarComanda} />
 
-        <Text>Selecione uma Comanda para Fechamento:</Text>
-        <Picker
-          selectedValue={comandaSelecionada}
-          onValueChange={(itemValue) => setComandaSelecionada(itemValue)}
-        >
-          <Picker.Item label="Selecione uma comanda" value="" />
-          {comandas.map((comanda) => (
-            <Picker.Item
-              key={comanda.comanda_id}
-              label={`Comanda #${comanda.comanda_id}`}
-              value={comanda.comanda_id}
-            />
-          ))}
-        </Picker>
-        <Button title="Fechar Comanda" onPress={() => fecharComanda(item.comanda_id)} />
+        <Text>Digite o ID da Comanda para Fechamento:</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          placeholder="ID da Comanda"
+          value={comandaSelecionada}
+          onChangeText={setComandaSelecionada} // Atualiza o estado com o ID digitado
+        />
+        <Button title="Fechar Comanda" onPress={fecharComanda} />
     </View>
   );
 }

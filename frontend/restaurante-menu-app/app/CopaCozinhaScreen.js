@@ -9,7 +9,7 @@ export default function CopaCozinhaScreen() {
 
   const carregarPedidos = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/pedidos');
+      const response = await axios.get('http://localhost:3000/pedidos/${comandaId:1}');
       const pedidos = response.data;
 
       const itensResponse = await axios.get('http://localhost:3000/itens');
