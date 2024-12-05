@@ -1,24 +1,24 @@
 const { Sequelize } = require('sequelize');
-const sequelize = require('../config/config'); // sua configuração do Sequelize
-
-const calcularTotalComanda = async (comandaId) => {
-  const result = await sequelize.query(
-    'SELECT calcular_total_comanda(:comandaId) AS total',
-    {
-      replacements: { comandaId },
-      type: Sequelize.QueryTypes.SELECT,
-    }
-  );
-  return result[0].total;
-};
+const sequelize = require('../config/config'); 
 
 const relatorioVenda = async (req, res) => {
-  const { comandaId } = req.params; 
   try {
-    const total = await calcularTotalComanda(comandaId);
-    res.status(200).json({ total }); 
+    const vendas = await sequelize.query(
+      `
+      SELECT 
+        c.id AS comanda_id, 
+        calcular_total_comanda(c.id) AS total, 
+        c.created_at AS data
+      FROM comandas c
+      ORDER BY c.created_at DESC
+      `,
+      { type: Sequelize.QueryTypes.SELECT }
+    );
+
+    res.status(200).json(vendas);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao calcular total da comanda' });
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao carregar o relatório de vendas' });
   }
 };
 

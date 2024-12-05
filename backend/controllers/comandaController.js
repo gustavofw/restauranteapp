@@ -40,22 +40,28 @@ const abrirComanda = async (req, res) => {
 };
 
 const fecharComanda = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     const comanda = await Comanda.findByPk(id);
-    if (!comanda) return res.status(404).json({ error: 'Comanda não encontrada!' });
+    if (!comanda) {
+      return res.status(404).json({ error: 'Comanda não encontrada' });
+    }
 
-    comanda.aberta = false;
-    await comanda.save();
+    if (comanda.status !== 'aberta') {
+      return res.status(400).json({ error: 'Comanda já está fechada ou não está aberta' });
+    }
 
-    const pedidos = await Pedido.findAll({ 
-      where: { ComandaId: id }, 
-      include: [Item],
+    comanda.status = 'fechada';
+    await comanda.save(); 
+
+    res.status(200).json({
+      message: 'Comanda fechada com sucesso!',
+      comanda,
     });
-    const total = pedidos.reduce((sum, pedido) => sum + pedido.quantidade * pedido.Item.preco, 0);
-    res.status(200).json({ message: 'Comanda fechada!', total });
   } catch (error) {
-    res.status(400).json({ error: 'Erro ao fechar comanda!' });
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao fechar comanda' });
   }
 };
 
