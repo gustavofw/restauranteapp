@@ -23,10 +23,10 @@ export default function RelatorioVendasScreen() {
       <Text style={styles.title}>Relatório de Vendas</Text>
       <FlatList
         data={vendas}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.comandaId.toString()}
         renderItem={({ item }) => (
           <Text>
-            Data: {item.data} - Total: R$ {item.total.toFixed(2)}
+            Comanda #{item.comandaId} - Total: R$ {item.total.toFixed(2)} - Data: {item.data}
           </Text>
         )}
       />
