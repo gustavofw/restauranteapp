@@ -11,7 +11,7 @@ export default function RelatorioVendasScreen() {
 
   const carregarRelatorio = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/relatorio-vendas');
+      const response = await axios.get('http://localhost:3000/relatorios/vendas');
       setRelatorio(response.data || []);
     } catch (error) {
       alert('Erro ao carregar relatório de vendas');

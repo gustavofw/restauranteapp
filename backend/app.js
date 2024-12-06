@@ -10,7 +10,6 @@ const pedidoRoutes = require('./routes/pedido');
 const loginRoutes = require('./routes/login'); 
 const relatorioRoutes = require('./routes/relatorio');
 
-
 const app = express();
 app.use(express.json());
 app.use(cors());

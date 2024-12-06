@@ -6,7 +6,7 @@ module.exports = {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       quantidade: { type: Sequelize.INTEGER, allowNull: false },
       status: { type: Sequelize.ENUM("pendente", "produzido", "entregue"), defaultValue: "pendente" },
-      comandaId: {
+      ComandaId: {
         type: Sequelize.INTEGER,
         references: { model: "Comandas", key: "id" },
         onUpdate: "CASCADE",

@@ -9,29 +9,20 @@ export default function CopaCozinhaScreen() {
 
   const carregarPedidos = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/pedidos/${comandaId:1}');
+      const response = await axios.get('http://localhost:3000/pedidos');
       const pedidos = response.data;
 
-      const itensResponse = await axios.get('http://localhost:3000/itens');
-      const usuariosResponse = await axios.get('http://localhost:3000/usuarios');
-      const itens = itensResponse.data;
-      const usuarios = usuariosResponse.data;
-
       const pedidosComDetalhes = pedidos.map((pedido) => {
-        const item = itens.find((i) => i.id === pedido.itemId);
-        const usuario = usuarios.find((u) => u.id === pedido.usuarioId);
         return {
           ...pedido,
-          itemNome: item?.nome || 'Item Desconhecido',
-          usuarioNome: usuario?.nome || 'Usuário Desconhecido',
-          categoria: item?.categoria || 'Desconhecida', 
+          itemNome: pedido?.Item?.nome || 'Item Desconhecido',
+          usuarioNome: pedido?.Comanda?.Usuario?.nome || 'Usuário Desconhecido',
+          tipo: pedido?.Item?.tipo || 'Desconhecida', 
         };
       });
 
-      setPedidos(pedidosComDetalhes);
-
-      setCopas(pedidosComDetalhes.filter((pedido) => pedido.categoria === 'bebida'));
-      setCozinhas(pedidosComDetalhes.filter((pedido) => pedido.categoria === 'prato'));
+      setCozinhas(pedidosComDetalhes.filter((p) => p.tipo === 'prato'));
+      setCopas(pedidosComDetalhes.filter((p) => p.tipo === 'bebida'));
     } catch (error) {
       alert('Erro ao carregar pedidos');
     }
@@ -44,7 +35,7 @@ export default function CopaCozinhaScreen() {
   const renderPedido = ({ item }) => (
     <View style={styles.pedidoContainer}>
       <Text style={styles.pedidoText}>
-        <Text style={styles.boldText}>Comanda #{item.comandaId}:</Text> {item.itemNome} -{' '}
+        <Text style={styles.boldText}>Comanda {item.ComandaId}:</Text> {item.itemNome} -{' '}
         {item.usuarioNome} - Status: {item.status}
       </Text>
     </View>
