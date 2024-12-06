@@ -130,9 +130,9 @@ export default function ComandasScreen() {
   
     try {
       const response = await axios.put(`http://localhost:3000/comandas/${comandaSelecionada}/fechar`);
-      alert(response.data.message); // Mensagem de sucesso
-      setComandaSelecionada(''); // Limpa a seleção da comanda
-      carregarComandas(); // Atualiza a lista de comandas após fechamento
+      alert(response.data.message); 
+      setComandaSelecionada(''); 
+      carregarComandas(); 
     } catch (error) {
       alert('Erro ao fechar comanda. Verifique o número inserido.');
     }
@@ -181,7 +181,7 @@ export default function ComandasScreen() {
           keyboardType="numeric"
           placeholder="ID da Comanda"
           value={comandaSelecionada}
-          onChangeText={setComandaSelecionada} // Atualiza o estado com o ID digitado
+          onChangeText={setComandaSelecionada} 
         />
         <Button title="Fechar Comanda" onPress={fecharComanda} />
     </View>

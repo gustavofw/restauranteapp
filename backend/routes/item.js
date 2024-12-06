@@ -5,5 +5,4 @@ const { cadastrarItem, listarItens} = require('../controllers/itemController');
 router.post('/cadastrar', cadastrarItem);
 router.get('/', listarItens);
 
-
 module.exports = router;

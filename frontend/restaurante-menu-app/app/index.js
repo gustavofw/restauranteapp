@@ -26,9 +26,6 @@ export default function Index() {
       <Link href="/CopaCozinhaScreen" style={styles.button}>
         Ir para a copa e cozinha
       </Link>
-      <Link href="/LoginScreen" style={styles.button}>
-        Ir para o login
-      </Link>
       <Link href="/RelatoriosVendaScreen" style={styles.button}>
         Ir para os relatórios de vendas
       </Link>

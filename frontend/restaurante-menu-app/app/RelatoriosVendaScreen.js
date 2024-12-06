@@ -38,6 +38,7 @@ export default function RelatorioVendasScreen() {
                 </Text>
               ))}
               <Text style={styles.valorTotal}>Valor Total: R${item.valorTotal.toFixed(2)}</Text>
+              <Text>Data: {new Date(item.data).toLocaleDateString()}</Text>
             </View>
           )}
         />
