@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
@@ -22,7 +22,7 @@ export default function ComandasScreen() {
   const carregarUsuarios = async () => {
     try {
       const response = await axios.get('http://localhost:3000/usuarios');
-      setUsuarios(response.data || []); 
+      setUsuarios(response.data || []);
     } catch (error) {
       alert('Erro ao carregar usuários');
     }
@@ -31,7 +31,7 @@ export default function ComandasScreen() {
   const carregarItens = async () => {
     try {
       const response = await axios.get('http://localhost:3000/itens');
-      setItens(response.data || []); 
+      setItens(response.data || []);
     } catch (error) {
       alert('Erro ao carregar itens');
     }
@@ -40,10 +40,7 @@ export default function ComandasScreen() {
   const carregarComandas = async () => {
     try {
       const response = await axios.get('http://localhost:3000/comandas');
-      const comandasFiltradas = response.data.filter(
-        (value, index, self) => self.findIndex((v) => v.comanda_id === value.comanda_id) === index
-      );
-      setComandas(comandasFiltradas || []); 
+      setComandas(response.data || []);
     } catch (error) {
       alert('Erro ao carregar comandas');
     }
@@ -55,23 +52,11 @@ export default function ComandasScreen() {
       return;
     }
 
-    const itemExistente = itensSelecionados.find((item) => item.id === itemSelecionado);
-
-    if (itemExistente) {
-      setItensSelecionados((prevState) =>
-        prevState.map((item) =>
-          item.id === itemSelecionado
-            ? { ...item, quantidade: item.quantidade + parseInt(quantidade) }
-            : item
-        )
-      );
-    } else {
-      const itemNome = itens.find((item) => item.id === itemSelecionado)?.nome || '';
-      setItensSelecionados((prevState) => [
-        ...prevState,
-        { id: itemSelecionado, nome: itemNome, quantidade: parseInt(quantidade) },
-      ]);
-    }
+    const itemNome = itens.find((item) => item.id === itemSelecionado)?.nome || '';
+    setItensSelecionados((prevState) => [
+      ...prevState,
+      { id: itemSelecionado, nome: itemNome, quantidade: parseInt(quantidade) },
+    ]);
 
     setItemSelecionado('');
     setQuantidade('');
@@ -104,48 +89,31 @@ export default function ComandasScreen() {
     }
   };
 
-  const carregarComandasPorUsuario = async (usuarioId) => {
-    try {
-      if (!usuarioId) {
-        setComandas([]); 
-        return;
-      }
-  
-      const response = await axios.get(`http://localhost:3000/comandas?usuarioId=${usuarioId}`);
-      setComandas(response.data || []); 
-    } catch (error) {
-      alert('Erro ao carregar comandas');
-    }
-  };
-  
-  useEffect(() => {
-    carregarComandasPorUsuario(usuarioSelecionado);
-  }, [usuarioSelecionado]);
-  
   const fecharComanda = async () => {
     if (!comandaSelecionada || isNaN(comandaSelecionada)) {
       alert('Por favor, selecione ou insira um número de comanda válido!');
       return;
     }
-  
+
     try {
-      const response = await axios.put(`http://localhost:3000/comandas/${comandaSelecionada}/fechar`);
-      alert(response.data.message); 
-      setComandaSelecionada(''); 
-      carregarComandas(); 
+      await axios.put(`http://localhost:3000/comandas/${comandaSelecionada}/fechar`);
+      alert('Comanda fechada com sucesso!');
+      setComandaSelecionada('');
+      carregarComandas();
     } catch (error) {
       alert('Erro ao fechar comanda. Verifique o número inserido.');
     }
-  };  
-  
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gerenciamento de Comandas</Text>
 
-      <Text>Selecione um Usuário:</Text>
+      <Text style={styles.label}>Selecione um Usuário:</Text>
       <Picker
         selectedValue={usuarioSelecionado}
         onValueChange={(itemValue) => setUsuarioSelecionado(itemValue)}
+        style={styles.picker}
       >
         <Picker.Item label="Selecione um usuário" value="" />
         {usuarios.map((usuario) => (
@@ -153,10 +121,11 @@ export default function ComandasScreen() {
         ))}
       </Picker>
 
-      <Text>Selecione um Item:</Text>
+      <Text style={styles.label}>Selecione um Item:</Text>
       <Picker
         selectedValue={itemSelecionado}
         onValueChange={(itemValue) => setItemSelecionado(itemValue)}
+        style={styles.picker}
       >
         <Picker.Item label="Selecione um item" value="" />
         {itens.map((item) => (
@@ -171,19 +140,27 @@ export default function ComandasScreen() {
         value={quantidade}
         onChangeText={setQuantidade}
       />
-      <Button title="Adicionar ao Pedido" onPress={adicionarItemPedido} />
+      <TouchableOpacity style={styles.button} onPress={adicionarItemPedido}>
+        <Text style={styles.buttonText}>Adicionar ao Pedido</Text>
+      </TouchableOpacity>
 
-      <Button title="Criar Comanda" onPress={adicionarComanda} />
+      <TouchableOpacity style={styles.buttonPrimary} onPress={adicionarComanda}>
+        <Text style={styles.buttonText}>Criar Comanda</Text>
+      </TouchableOpacity>
 
-        <Text>Digite o ID da Comanda para Fechamento:</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          placeholder="ID da Comanda"
-          value={comandaSelecionada}
-          onChangeText={setComandaSelecionada} 
-        />
-        <Button title="Fechar Comanda" onPress={fecharComanda} />
+      <Text style={styles.label}>Digite o ID da Comanda para Fechamento:</Text>
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        placeholder="ID da Comanda"
+        value={comandaSelecionada}
+        onChangeText={setComandaSelecionada}
+      />
+      <TouchableOpacity style={styles.button} onPress={fecharComanda}>
+        <Text style={styles.buttonText}>Fechar Comanda</Text>
+      </TouchableOpacity>
+
+      
     </View>
   );
 }
@@ -191,7 +168,7 @@ export default function ComandasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 50,
+    padding: 20,
     backgroundColor: '#f5f5f5',
   },
   title: {
@@ -199,28 +176,67 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
   },
-  comandaContainer: {
+  label: {
+    fontSize: 16,
+    marginVertical: 10,
+    color: '#555',
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  picker: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: '#ff9800',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonPrimary: {
+    backgroundColor: '#4caf50',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  card: {
     backgroundColor: '#fff',
     padding: 15,
+    borderRadius: 8,
     marginBottom: 10,
-    borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 8,
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   emptyMessage: {
     textAlign: 'center',
-    color: '#aaa',
+    color: '#999',
     fontSize: 16,
+    marginTop: 20,
   },
 });
